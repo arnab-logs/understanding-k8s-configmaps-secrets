@@ -1,19 +1,22 @@
 
----
-
-````markdown
-# Learning Kubernetes: ConfigMaps & Secrets  
+# Learning Kubernetes ConfigMaps and Secrets  
 
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-326ce5?style=for-the-badge&logo=kubernetes&logoColor=white)
 ![Minikube](https://img.shields.io/badge/Minikube-FFCB2B?style=for-the-badge&logo=kubernetes&logoColor=black)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+
+---
+
+````markdown
+# Learning Kubernetes: ConfigMaps & Secrets  
 
 This repository documents my learning journey with **ConfigMaps** and **Secrets** in Kubernetes.  
 Here, I explore how to inject configuration into Pods via environment variables, mount them as files, and manage sensitive information with Secrets.  
 ````
 ---
 
-## 📌 ConfigMaps  
+
+## ConfigMaps  
 
 ### 1. Creating a ConfigMap  
 
@@ -34,7 +37,7 @@ Apply it:
 kubectl apply -f cm.yaml
 ```
 
-⚠️ Always use `apply` instead of `create`.
+ Always use `apply` instead of `create`.
 
 * `create` will fail if the resource already exists.
 * `apply` will update the resource if it exists, or create a new one if it doesn’t.
@@ -43,8 +46,13 @@ Check ConfigMaps:
 
 ```bash
 kubectl get cm
+```
+<img width="2934" height="182" alt="image" src="https://github.com/user-attachments/assets/ac4c4da1-4212-49fc-b213-bab504aa0ee2" />
+
+```bash
 kubectl describe cm test-cm
 ```
+<img width="2934" height="782" alt="image" src="https://github.com/user-attachments/assets/513afa69-8064-4235-9b1b-6093d70b6cc8" />
 
 ---
 
@@ -90,12 +98,17 @@ kubectl apply -f deployment.yaml
 
 Exec into a pod and check env vars:
 
+<img width="2934" height="280" alt="image" src="https://github.com/user-attachments/assets/103968ab-bb23-4710-a43c-a27bd9c50828" />
+
+
 ```bash
 kubectl exec -it <pod-name> -- /bin/bash
 env | grep DB_PORT
 ```
 
-✅ You should see `DB_PORT=3306`.
+You should see `DB_PORT=3306`.
+
+<img width="2934" height="320" alt="image" src="https://github.com/user-attachments/assets/66ed97de-57d2-444f-a765-33b1462d293f" />
 
 ---
 
@@ -108,7 +121,7 @@ If we later update `cm.yaml` (e.g., change `db-port: "3306"` → `db-port: "3307
 
 But in production, restarting Pods may cause traffic loss.
 
-👉 Solution: Use **VolumeMounts** instead of env variables.
+ Solution: Use **VolumeMounts** instead of env variables.
 
 ---
 
@@ -161,13 +174,20 @@ ls /opt
 cat /opt/db-port
 ```
 
-✅ Output will be `3306`.
+ Output will be `3306`.
+ 
+<img width="2934" height="366" alt="image" src="https://github.com/user-attachments/assets/a575ad14-2879-405c-b398-19183372c027" />
 
-If we update the ConfigMap (`3306` → `3307`), the mounted file in `/opt/db-port` updates **live**, without restarting the Pod. 🎉
+
+If we update the ConfigMap (`3306` → `3307`), the mounted file in `/opt/db-port` updates **live**, without restarting the Pod. 
+
+<img width="2934" height="782" alt="image" src="https://github.com/user-attachments/assets/1b8bd02b-8e3d-4210-96a4-30001d906ce9" />
+
+<img width="2934" height="146" alt="image" src="https://github.com/user-attachments/assets/9724ee15-31d8-42af-a9c9-46fa09a41873" />
 
 ---
 
-## 🔐 Secrets
+## Secrets
 
 ### 1. Creating a Secret
 
@@ -186,6 +206,7 @@ Output will show:
 ```
 db-port:  <redacted>
 ```
+<img width="2934" height="514" alt="image" src="https://github.com/user-attachments/assets/43f56085-9689-4eb9-a93c-6cb486204bf8" />
 
 ### 2. Editing a Secret
 
@@ -198,6 +219,7 @@ Kubernetes stores Secrets in **base64 encoding**. Example:
 ```
 db-port: MzMwNg==
 ```
+<img width="2934" height="514" alt="image" src="https://github.com/user-attachments/assets/f6fa4571-1759-43d9-9478-42a17bf75a47" />
 
 Decode it:
 
@@ -205,13 +227,14 @@ Decode it:
 echo "MzMwNg==" | base64 --decode
 3306
 ```
+<img width="2934" height="96" alt="image" src="https://github.com/user-attachments/assets/ef8c8b70-37a3-4900-b2cd-a3a8a4f5424b" />
 
-⚠️ Note: Base64 is **not encryption**, just encoding.
+ Note: Base64 is **not encryption**, just encoding.
 For stronger security, tools like **HashiCorp Vault** or KMS should be used to encrypt secrets at rest.
 
 ---
 
-## 📝 Summary
+## Summary
 
 * **ConfigMaps** → Store non-sensitive config (env vars, config files).
 * **Secrets** → Store sensitive info (passwords, tokens, certs).
